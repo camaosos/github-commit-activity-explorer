@@ -22,8 +22,19 @@ uvicorn prophet_app:app --reload
 
 Open [http://localhost:8000/docs](http://localhost:8000/docs) to view it in the browser.
 
+## For both
+
+Press your GitHub profile picture and then Settings -> Developer settings -> Personal access tokens -> Fine-grained tokens -> Generate new token. Copy the token to a secure place.
+
+Create a file called ".env" (it is not included in the repo for obvious reasons) and add the following line:
+
+```
+REACT_APP_AUTH_TOKEN="<token>"
+```
+This token will work for both Octokit and PyGitHub.
+
 When the "Predict" button is pressed in the React app, the Python microservice should be running.
 
 ## Assignments
-[Pre Assignment answers](PRE_ASSIGNMENT_ANSWERS.md)
-[Post Assignment answers](POST_ASSIGNMENT_ANSWERS.md)
+- [Pre Assignment answers](PRE_ASSIGNMENT_ANSWERS.md)
+- [Post Assignment answers](POST_ASSIGNMENT_ANSWERS.md)

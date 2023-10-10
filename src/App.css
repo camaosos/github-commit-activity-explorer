@@ -1,5 +1,9 @@
+* { padding: 0; margin: 0; }
+
 .App {
   text-align: center;
+  margin: 0;
+  height: 100%;
 }
 
 .App-logo {
@@ -57,10 +61,14 @@
 .repoDiv {
   height: 100%;
   width: 40%;
-  background-color:aliceblue;
+  background-color:#282c34;
 }
 
 
 ul {
   list-style-type: none;
+}
+
+#repoItem:hover {
+  opacity: 0.3;
 }

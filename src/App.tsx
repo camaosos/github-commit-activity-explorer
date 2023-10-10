@@ -14,14 +14,12 @@ const octokit = new Octokit({
 
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
-async function itemToRepoData(item: { full_name: string; }) {
+async function itemToRepoData(item: any) {
 
 	const weeks = await octokit.request('GET /repos/{owner}/{repo}/stats/participation', {
 		owner: item.full_name.split("/")[0],
 		repo: item.full_name.split("/")[1]
 	  })
-
-	console.log("weeks", weeks)
 
 	const response = weeks.data.all.map((value: any, index: any) => {
 		var repoDataPoint = {};
@@ -29,8 +27,6 @@ async function itemToRepoData(item: { full_name: string; }) {
 		repoDataPoint["x"] = index;
 		return repoDataPoint;
 	 })
-
-	 console.log("repodata", response)
 
 	 return response
 
@@ -41,26 +37,23 @@ async function itemListToGraphOptions(items: any[]){
 
 	if (items.length === 0) {return [{}]}
 
-	const dataItems = await Promise.all(items.map(async (value: { full_name: any; }, index: any) => {
+	const dataItems = await Promise.all(items.map(async (value: any, index: any) => {
 		const dataPoints = await itemToRepoData(value);
 		var dataObject = {};
 		dataObject["type"] = "spline";
 		dataObject["name"] = value.full_name;
 		dataObject["showInLegend"] = true;
 		dataObject["dataPoints"] = dataPoints;
+		dataObject["color"] = value.color;
 		return dataObject;
 	}))
-
-	console.log("dataitems", dataItems)
 	
 	const response = {
 		animationEnabled: false,	
-		title:{
-			text: "Repo Activity"
-		},
 		axisX : {
 			minimum: 0,
-			maximum: 64
+			maximum: 64,
+			title: "Weeks after one year ago"
 		},
 		axisY : {
 			title: "Commits"
@@ -70,9 +63,6 @@ async function itemListToGraphOptions(items: any[]){
 		},
 		data: dataItems
 	}
-
-	console.log("graphoptions", response)
-
 	return response
 }
 
@@ -115,12 +105,10 @@ export default function ActivityExplorer (){
 
 	const defaultGraphOptions = {
 		animationEnabled: false,	
-		title:{
-			text: "Repo Activity"
-		},
 		axisX : {
 			minimum: 0,
-			maximum: 64
+			maximum: 64,
+			title: "Weeks after one year ago"
 		},
 		axisY : {
 			title: "Commits"
@@ -174,6 +162,8 @@ export default function ActivityExplorer (){
 							<div className="aa-ItemContent" onClick={async (event) => {
 							  search.destroy()
 							  event.stopPropagation();
+							  const random_color = '#'+(0x1000000+Math.random()*0xffffff).toString(16).substr(1,6).toUpperCase()
+							  item["color"] = random_color
 							  setQuery(item.full_name);
 							  setRepoItemList(repoItemList.concat([item]))
 							  var newOptions = await itemListToGraphOptions(repoItemList.concat([item]));
@@ -289,7 +279,7 @@ export default function ActivityExplorer (){
 			</div>
 			<div className="repoDiv">
 				<div ref={containerRef} />
-				<ul>
+				<ul style={{backgroundColor: "black", color: "white"}}>
 				{
 					repoItemList?.map( (t, idx: number) => (
 					<div>
@@ -298,7 +288,7 @@ export default function ActivityExplorer (){
 																							 setRepoItemList(newRepoItemList); 
 																							 var newOptions = await itemListToGraphOptions(newRepoItemList); 
 																							 setGraphOptions(newOptions);}}> 
-						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></button>
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></button>
 						<button style={{marginLeft: 10}} 
 								onClick={async ()=>{var dataObject = {}; dataObject["type"] = "spline";
 														dataObject["name"] = t.full_name+"_predict";

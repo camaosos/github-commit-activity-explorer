@@ -6,21 +6,19 @@ export type GitHubRepository = {
 	owner: {
 	  avatar_url: string;
 	};
+    color: string
   };
 
 export function RepoItem(inputItem: { item: any; }) {
     var item = inputItem.item
-
-    // console.log("item")
-    // console.log(item)
-    // console.log(item.item.owner.avatar_url)
 
     const stars = new Intl.NumberFormat('en-US').format(
         item.stargazers_count);
     // if item.leng
 
     return(
-        <div className="aa-ItemWrapper">
+        <div style={{display: "flex", justifyContent: "flex-start", height: "100%", width: "100%", margin: 0}} className="aa-ItemWrapper" id="repoItem" >
+            <div style={{background:item.color, height: "100%", width: "5%"}}>   </div>
         <div className="aa-ItemContent">
         <div className="aa-ItemIcon aa-ItemIcon--alignTop">
             <img
@@ -71,7 +69,7 @@ export function RepoItem(inputItem: { item: any; }) {
                 </div>
             </div>
             </div>
-            <div className="aa-ItemContentDescription">
+            <div className="aa-ItemContentDescription" style={{color: "white"}}>
             {item.description}
             </div>
         </div>
