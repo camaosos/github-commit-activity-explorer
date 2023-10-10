@@ -1,0 +1,6 @@
+prophet
+plotly
+uvicorn
+fastapi
+python-dotenv
+PyGithub
