@@ -69,6 +69,6 @@ ul {
   list-style-type: none;
 }
 
-#repoItem:hover {
+.repoItem:hover {
   opacity: 0.3;
 }

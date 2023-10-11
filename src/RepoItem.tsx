@@ -17,8 +17,8 @@ export function RepoItem(inputItem: { item: any; }) {
     // if item.leng
 
     return(
-        <div style={{display: "flex", justifyContent: "flex-start", height: "100%", width: "100%", margin: 0}} className="aa-ItemWrapper" id="repoItem" >
-            <div style={{background:item.color, height: "100%", width: "5%"}}>   </div>
+        <div className="aa-ItemWrapper" >
+            
         <div className="aa-ItemContent">
         <div className="aa-ItemIcon aa-ItemIcon--alignTop">
             <img

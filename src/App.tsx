@@ -282,24 +282,30 @@ export default function ActivityExplorer (){
 				<ul style={{backgroundColor: "black", color: "white"}}>
 				{
 					repoItemList?.map( (t, idx: number) => (
-					<div>
-						<RepoItem item={t} /> 
-						<button style={{marginLeft: 10}} value={""+idx} onClick={async ()=>{ var newRepoItemList = repoItemList.filter(function(repo: any) { return repo!== t }); 
-																							 setRepoItemList(newRepoItemList); 
-																							 var newOptions = await itemListToGraphOptions(newRepoItemList); 
-																							 setGraphOptions(newOptions);}}> 
-						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></button>
+					<div style={{ width: "100%", display: "flex", justifyContent: "space-around"}} className="repoItem">
+						<div style={{ height: "inherit", width: "5%", backgroundColor:t.color, boxSizing: "border-box"}}/>
+						<div style={{ height: "inherit", width: "75%", boxSizing: "border-box"}}><RepoItem item={t} /> </div>
+						<div style={{ height: "inherit", width: "20%", boxSizing: "border-box"}}>
+						<button style={{marginLeft: 10}} value={""+idx} 
+								onClick={async ()=>{ var newRepoItemList = repoItemList.filter(function(repo: any) { return repo!== t }); 
+													 setRepoItemList(newRepoItemList);
+													 var newOptions = await itemListToGraphOptions(newRepoItemList); 
+													 setGraphOptions(newOptions);}}> 
+							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+						</button>
 						<button style={{marginLeft: 10}} 
-								onClick={async ()=>{var dataObject = {}; dataObject["type"] = "spline";
+								onClick={async ()=>{const prediction = await getPrediction(t.full_name);
+													var dataObject = {}; dataObject["type"] = "spline";
 														dataObject["name"] = t.full_name+"_predict";
 														dataObject["showInLegend"] = true;
-														const prediction = await getPrediction(t.full_name);
 														dataObject["dataPoints"] = prediction;
+														dataObject["color"] = t.color;
 														var newOptions = {...graphOptions};
 														newOptions["data"] = graphOptions["data"].concat([dataObject]);
 														setGraphOptions(newOptions);
 														}}> Predict
 						</button>
+						</div>
 					</div>
 					))
 				}
