@@ -1,12 +1,16 @@
 ## React App
 
+Install Node.js and run
+
+npx create-react-app github-commit-activity-explorer --template typescript
+
 You can check how to install, start and test your [React App](README_REACT.md)
 
 ## Python App
 
 Install requirements
 
-First step is to create a virtual environment and install libraries, in my case I used Conda (verify that Anaconda or Miniconda is previosly installed):
+First step is to create a virtual environment and install libraries, in my case I used Conda (verify if Anaconda or Miniconda is previosly installed):
 
 ```
 conda create -n prophet_env python=3.8

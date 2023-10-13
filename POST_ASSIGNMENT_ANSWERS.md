@@ -23,6 +23,7 @@ Total: 7 h
 - The UseEffect hook.
 - Using push/slice is forbidden inside onClick functions. Use concat/filter instead.
 - Algolia Autocomplete: A difficult library full of features, but useful for this task.
+- {...items} for deep copying an object
 
 #### Do you feel that this assignment allowed you to showcase your abilities effectively?
 

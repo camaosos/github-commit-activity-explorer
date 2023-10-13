@@ -7,6 +7,7 @@ import '@algolia/autocomplete-theme-classic';
 import { Root, createRoot } from 'react-dom/client';
 import qs from 'qs';
 import { RepoItem, GitHubRepository} from "./RepoItem.tsx"
+import { ReactComponent as DeleteIcon } from './trash-2.svg';
 
 const octokit = new Octokit({
   auth: process.env.REACT_APP_AUTH_TOKEN
@@ -22,9 +23,7 @@ async function itemToRepoData(item: any) {
 	  })
 
 	const response = weeks.data.all.map((value: any, index: any) => {
-		var repoDataPoint = {};
-		repoDataPoint["y"] = value;
-		repoDataPoint["x"] = index;
+		var repoDataPoint = {"x": index, "y": value};
 		return repoDataPoint;
 	 })
 
@@ -39,12 +38,11 @@ async function itemListToGraphOptions(items: any[]){
 
 	const dataItems = await Promise.all(items.map(async (value: any, index: any) => {
 		const dataPoints = await itemToRepoData(value);
-		var dataObject = {};
-		dataObject["type"] = "spline";
-		dataObject["name"] = value.full_name;
-		dataObject["showInLegend"] = true;
-		dataObject["dataPoints"] = dataPoints;
-		dataObject["color"] = value.color;
+		var dataObject = {"type":"spline",
+						  "name": value.full_name,
+						  "showInLegend": true,
+						  "dataPoints": dataPoints,
+						  "color": value.color};
 		return dataObject;
 	}))
 	
@@ -119,16 +117,43 @@ export default function ActivityExplorer (){
 		data: [{}]
 	}
 
-	var [repoItemList, setRepoItemList] = React.useState<GitHubRepository[]>([])
+	var [repoItemList, setRepoItemList] = React.useState<any[]>([])
 	var [graphOptions, setGraphOptions] = React.useState(defaultGraphOptions)
 	
 	const containerRef = useRef<HTMLDivElement | null>(null);
 	const panelRootRef = useRef<Root | null>(null);
 	const rootRef = useRef<HTMLElement | null>(null);
 
+	async function onDelete(t: any) {
+		var newRepoItemList = repoItemList.filter(function(repo: any) { return repo!== t }); 
+		setRepoItemList(newRepoItemList);
+		var newOptions = await itemListToGraphOptions(newRepoItemList); 
+		setGraphOptions(newOptions);
+	}
+
+	async function onPredict(t: any) {
+		const prediction = await getPrediction(t.full_name);
+		var dataObject = {"type":"spline", 
+							"name": t.full_name+"_predict",
+							"showInLegend": true,
+							"dataPoints": prediction,
+							"color": t.color};
+		var newOptions = {...graphOptions};
+		newOptions["data"] = graphOptions["data"].concat([dataObject]);
+		setGraphOptions(newOptions);
+	}
+
 	useEffect(() => {
 		if (!containerRef.current) {
 		  return undefined;
+		}
+
+		async function onSelect(item: any){
+			const random_color = '#'+(0x1000000+Math.random()*0xffffff).toString(16).substr(1,6).toUpperCase()
+			item["color"] = random_color
+			setRepoItemList(repoItemList.concat([item]))
+			var newOptions = await itemListToGraphOptions(repoItemList.concat([item]));
+			setGraphOptions(newOptions)			
 		}
 	
 		const search = autocomplete<GitHubRepository>({
@@ -159,16 +184,7 @@ export default function ActivityExplorer (){
 	  
 						return (
 						  <div className="aa-ItemWrapper">
-							<div className="aa-ItemContent" onClick={async (event) => {
-							  search.destroy()
-							  event.stopPropagation();
-							  const random_color = '#'+(0x1000000+Math.random()*0xffffff).toString(16).substr(1,6).toUpperCase()
-							  item["color"] = random_color
-							  setQuery(item.full_name);
-							  setRepoItemList(repoItemList.concat([item]))
-							  var newOptions = await itemListToGraphOptions(repoItemList.concat([item]));
-							  setGraphOptions(newOptions)					
-						}}>
+							<div className="aa-ItemContent" onClick={() => {onSelect(item)}}>
 							  <div className="aa-ItemIcon aa-ItemIcon--alignTop">
 								<img
 								  src={item.owner.avatar_url}
@@ -287,23 +303,11 @@ export default function ActivityExplorer (){
 						<div style={{ height: "inherit", width: "75%", boxSizing: "border-box"}}><RepoItem item={t} /> </div>
 						<div style={{ height: "inherit", width: "20%", boxSizing: "border-box"}}>
 						<button style={{marginLeft: 10}} value={""+idx} 
-								onClick={async ()=>{ var newRepoItemList = repoItemList.filter(function(repo: any) { return repo!== t }); 
-													 setRepoItemList(newRepoItemList);
-													 var newOptions = await itemListToGraphOptions(newRepoItemList); 
-													 setGraphOptions(newOptions);}}> 
-							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+								onClick={() => onDelete(t)}>
+							<DeleteIcon/>
 						</button>
 						<button style={{marginLeft: 10}} 
-								onClick={async ()=>{const prediction = await getPrediction(t.full_name);
-													var dataObject = {}; dataObject["type"] = "spline";
-														dataObject["name"] = t.full_name+"_predict";
-														dataObject["showInLegend"] = true;
-														dataObject["dataPoints"] = prediction;
-														dataObject["color"] = t.color;
-														var newOptions = {...graphOptions};
-														newOptions["data"] = graphOptions["data"].concat([dataObject]);
-														setGraphOptions(newOptions);
-														}}> Predict
+								onClick={() => onPredict(t)}> Predict
 						</button>
 						</div>
 					</div>
