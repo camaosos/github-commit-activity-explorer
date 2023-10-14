@@ -54,7 +54,8 @@ async function itemListToGraphOptions(items: any[]){
 			title: "Weeks after one year ago"
 		},
 		axisY : {
-			title: "Commits"
+			title: "Commits",
+			minimum: 0,
 		},
 		toolTip: {
 			shared: false
@@ -109,7 +110,8 @@ export default function ActivityExplorer (){
 			title: "Weeks after one year ago"
 		},
 		axisY : {
-			title: "Commits"
+			title: "Commits",
+			minimum: 0,
 		},
 		toolTip: {
 			shared: false
@@ -295,20 +297,15 @@ export default function ActivityExplorer (){
 			</div>
 			<div className="repoDiv">
 				<div ref={containerRef} />
-				<ul style={{backgroundColor: "black", color: "white"}}>
+				<ul style={{color: "white"}}>
 				{
 					repoItemList?.map( (t, idx: number) => (
-					<div style={{ width: "100%", display: "flex", justifyContent: "space-around"}} className="repoItem">
+					<div style={{ width: "100%", display: "flex", justifyContent: "space-around", marginTop: 10, backgroundColor: "black", }} className="repoItem">
 						<div style={{ height: "inherit", width: "5%", backgroundColor:t.color, boxSizing: "border-box"}}/>
 						<div style={{ height: "inherit", width: "75%", boxSizing: "border-box"}}><RepoItem item={t} /> </div>
-						<div style={{ height: "inherit", width: "20%", boxSizing: "border-box"}}>
-						<button style={{marginLeft: 10}} value={""+idx} 
-								onClick={() => onDelete(t)}>
-							<DeleteIcon/>
-						</button>
-						<button style={{marginLeft: 10}} 
-								onClick={() => onPredict(t)}> Predict
-						</button>
+						<div style={{ height: "inherit", width: "20%", boxSizing: "border-box", display: "flex", alignItems: "center", justifyContent: "center"}}>
+							<button style={{marginLeft: 10, height: 32}} value={""+idx} onClick={() => onDelete(t)}><DeleteIcon/></button>
+							<button style={{marginLeft: 10, height: 32}} onClick={() => onPredict(t)}>Predict</button>
 						</div>
 					</div>
 					))
