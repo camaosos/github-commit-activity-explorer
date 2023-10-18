@@ -1,8 +1,12 @@
 ## React App
 
+This app was created at the first time as React Typecript. 
+
 Install Node.js and run
 
+```
 npx create-react-app github-commit-activity-explorer --template typescript
+```
 
 You can check how to install, start and test your [React App](README_REACT.md)
 
